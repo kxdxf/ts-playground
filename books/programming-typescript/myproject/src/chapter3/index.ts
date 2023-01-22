@@ -1,7 +1,7 @@
 // 1
-let a = 1042;  // number
-let b = 'apple and oranges'  // string
-const c = 'pineapples' // 推論なし
+let _a = 1042;  // number
+let _b = 'apple and oranges'  // string
+const _c = 'pineapples' // 推論なし
 let d = [true, true, false]  // boolean[]
 let e = {type: 'ficus'}  // {type: string}
 let f = [1, false]  // (number|boolean)[]
