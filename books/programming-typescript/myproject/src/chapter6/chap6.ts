@@ -1,0 +1,177 @@
+// --------------------------------
+// 共変性の確認
+// --------------------------------
+type ExistingUser = {
+    id: number
+    name: string
+}
+
+type NewUser = {
+    name: string
+}
+
+// ユーザーを削除するコードの作成
+function deleteUser(user: {id?: number, name: string}) {
+    delete user.id
+}
+
+let existingUser: ExistingUser = {
+    id: 123456,
+    name: 'Ima User'
+}
+
+deleteUser(existingUser)
+
+type LegacyUser = {
+    id?: number | string
+    name: string
+}
+
+let legacyUser: LegacyUser = {
+    id: '793331',
+    name: 'Xin Yang'
+}
+
+// エラー
+// deleteUser(legacyUser);
+
+
+// --------------------------------
+// 関数の変性の確認
+// --------------------------------
+// 関数のパラメータ型は反変
+class Animal{}
+class Bird extends Animal {
+    chirp() {}
+}
+class Crow extends Bird {
+    caw() {}
+}
+
+function chirp(bird: Bird): Bird {
+    bird.chirp()
+    return bird
+}
+
+// chirp(new Animal())  // エラー
+chirp(new Bird())
+chirp(new Crow())
+
+function clone(f: (b: Bird) => Bird): void {}
+
+function birdToBird(b: Bird): Bird {
+    return new Bird()
+}
+function birdToCrow(b: Bird): Crow {
+    return new Crow()
+}
+function birdToAnimal(b: Bird): Animal {
+    return new Animal()
+}
+
+// Birdを取り、Birdを返す関数は受け取れる
+clone(birdToBird)
+clone(birdToCrow)
+// clone(birdToAnimal)  渡せない
+
+
+// --------------------------------
+// 型の拡大
+// --------------------------------
+// 型推論の上で方が決まる
+let a_6 = 'x'
+let b_6 = 3
+var c_6 = true
+const d_6 = {x: 3}
+
+enum E {X, Y, Z}
+let e_6 =  E.X
+
+// イミュータブルな宣言は型が絞られる
+const a_6_2 = 'x'
+const b_6_2 = 3
+
+// 明示的に型アノテーションを使うと型の拡大を防げる
+let a_6_3: 'x' = 'x'
+const d_6_3: {x: 3} = {x: 3}
+
+// 際割り当てに伴う型の拡大
+let a_6_4 = 'x'
+let b_6_4 = a_6_4  // string型
+
+
+// --------------------------------
+// コンストアサーション
+// ・型の拡大を抑える
+// ・型のメンバーを再帰的にreadonlyにする
+// --------------------------------
+let c_6_5 = {x: 3} as const
+const sample = 'https://******'
+
+
+// --------------------------------
+// 過剰プロパティチェック
+// --------------------------------
+type Options = {
+    baseURL: string
+    cacheSize?: number
+    tier?: 'prod' | 'dev'
+}
+
+class API {
+    constructor(private options: Options) {}
+}
+
+new API({
+    baseURL: 'https://***',
+    tier: 'prod'
+})
+
+new API({
+    baseURL: sample,
+    tier: 'prod'
+})
+
+new API({
+    baseURL: sample,
+    // badTIer: 'prod'  IDEで警告 & エラー
+})
+
+
+// --------------------------------
+// 型の絞り込み
+// --------------------------------
+// 制御フロー文を使って型の絞り込みを行う
+type Unit = 'cm' | 'px' | '%'
+let units: Unit[] = ['cm', 'px', '%']
+
+function parseUnit(value: string): Unit | null {
+    for (let i = 0; i < units.length; i++) {
+        if (value.endsWith(units[i])) {
+            return units[i]
+        }
+    }
+    return null
+}
+
+type Width = {
+    unit: Unit,
+    value: number
+}
+
+function parseWidth(width: number | string | null | undefined): Width | null {
+    if (width == null) {
+        return null
+    }
+
+    if (typeof width === 'number') {
+        return {unit: 'px', value: width}
+    }
+
+    let unit = parseUnit(width)
+    if (unit) {
+        return {unit, value: parseFloat(width)}
+    }
+
+    return null
+}
