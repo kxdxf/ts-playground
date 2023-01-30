@@ -175,3 +175,81 @@ function parseWidth(width: number | string | null | undefined): Width | null {
 
     return null
 }
+
+
+// --------------------------------
+// タグ付き合併型
+// --------------------------------
+type UserTextEvent = {value: string, target: HTMLInputElement}
+type UserMouseEvent = {value: [number, number], target: HTMLElement}
+type UserEvent = UserTextEvent | UserMouseEvent
+
+// 返却値の型が制御と共に変わってしまってよくない
+// function handle(event: UserEvent) {
+//     if (typeof event.value === 'string') {
+//         event.value // string
+//         return
+//     }
+//     return event.value
+// }
+
+function handle(event: UserEvent) {
+    if (typeof event.value === 'string') {
+        event.value  // string
+        event.target  // HTMLInputElement or HTMLElement
+    }
+    event.value  // [number, number]
+    event.target  // HTMLInputElement or HTMLElement
+}
+
+
+// --------------------------------
+// 完全生
+// 実装が全てのケースをカバーできているかどうか、型チェッカーが確認できるようにするもの
+// --------------------------------
+type Weekday = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri'
+type Day = Weekday | 'Sat' | 'Sun'
+
+// 以下のような書き方だと、全てのパターンを網羅できていないことを警告してくれる
+// function getNextDay(w: Weekday): Day {
+//     switch (w) {
+//         case 'Mon' : return 'Tue'
+//     }
+// }
+
+// 全てのケースをカバーすればエラーは出ない
+function getNextDay(w: Weekday): Day {
+    switch (w) {
+        case 'Mon' : return 'Tue'
+        case 'Tue' : return 'Wed'
+        case 'Wed' : return 'Thu'
+        case 'Thu' : return 'Fri'
+        case 'Fri' : return 'Mon'
+    }
+}
+
+function isBig(n: number) {
+    return n >= 100;
+}
+
+
+// --------------------------------
+// 高度なオブジェクト型
+// --------------------------------
+type APIResponse = {
+    user: {
+        userId: string
+        friendList: {
+            count: number
+            friends: {
+                firstName: string
+                lastName: string
+            }[]
+        }
+    }
+}
+
+// function getAPIResponse(): Promise<APIResponse> {
+// }
+
+
