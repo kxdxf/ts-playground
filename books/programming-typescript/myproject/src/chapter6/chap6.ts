@@ -252,4 +252,153 @@ type APIResponse = {
 // function getAPIResponse(): Promise<APIResponse> {
 // }
 
+function renderFriendList(friendList: unknown) {}
+
+// unknownにしているfriendListの型
+// type FriendList = {
+//     count: number
+//     friends: {
+//         firstName: string
+//         lasrName: string
+//     }[]
+// }
+//
+// type APIResponse = {
+//     user: {
+//         userId: string
+//         friendList: FriendList
+//     }
+// }
+
+// --------------------------------
+// keyof演算子
+// --------------------------------
+type ResponseKey = keyof APIResponse
+type UserKeys = keyof APIResponse['user']
+
+// 型安全なゲッター関数
+function get<O extends object, K extends keyof O>(o: O, k: K) {
+    return o[k]
+}
+
+type ActiveLog = {
+    lastEvent: Date
+    events: {
+        id: string
+        timestamp: Date
+        type: 'Read' | 'Write'
+    }[]
+}
+
+function createActivityLog(): ActiveLog {
+    return {
+        lastEvent: new Date(),
+        events: [{
+            id: '100',
+            timestamp: new Date(),
+            type: "Read"
+        }]
+    }
+}
+
+let activetyLog: ActiveLog =createActivityLog()
+let lastEvent = get(activetyLog, 'lastEvent')
+let events = get(activetyLog, 'events')
+
+console.log(lastEvent)
+console.log(events)
+
+type Get = {
+    <O extends object, K1 extends keyof O>(o: O, k1: K1): O[K1]
+    <O extends object, K1 extends keyof O, K2 extends keyof O[K1]>(o: O, k1: K1, k2: K2): O[K1][K2]
+    <O extends object, K1 extends keyof O, K2 extends keyof O[K1], K3 extends keyof O[K1][K2]>(o: O, k1: K1, k2: K2, k3: K3): O[K1][K2][K3]
+}
+
+let get2: Get = (object: any, ...keys: string[]) => {
+    let result = object
+    keys.forEach(k => result = result[k])
+    return result
+}
+
+get2(activetyLog, 'events', 0, 'type')
+
+
+// --------------------------------
+// レコード型
+// ある値から別の値へのマッピングを定義できる
+// --------------------------------
+let nextDay2: Record<Weekday, Day> = {
+    Mon: 'Tue',
+    Tue: 'Wed',
+    Wed: 'Thu',
+    Thu: 'Fri',
+    Fri: 'Sat'
+}
+
+
+// --------------------------------
+// マップ型
+// --------------------------------
+// Weekdayに対するキー(型はDay)のマッピング
+let nextDay3: {[K in Weekday]: Day} = {
+    Mon: 'Tue',
+    Tue: 'Wed',
+    Wed: 'Thu',
+    Thu: 'Fri',
+    Fri: 'Sat'
+}
+
+// type MyMappedType = {
+//     [Key in UnionType]: ValueType
+// }
+
+// type Record<K extends keyof any, T> = {
+//     [P in K]: T
+// }
+
+type Account = {
+    id: number
+    isEmployee: boolean
+    notes: string[]
+}
+
+type OptionalAccount = {
+    [K in keyof Account]?: Account[K]
+}
+
+type NUllableAccount = {
+    [K in keyof Account]: Account[K] | null
+}
+
+type ReadonlyAccount = {
+    readonly [K in keyof Account]: Account[K]
+}
+
+type Account2 = {
+    -readonly [K in keyof ReadonlyAccount]: Account[K]
+}
+
+type Account3 = {
+    [K in keyof OptionalAccount]-?: Account[K]
+}
+
+
+// --------------------------------
+// コンパニオンオブジェクトパターン
+// 型と値の情報をグループ化できる
+// --------------------------------
+type Unit2 = 'EUR' | 'GBP' | 'JPY' | 'USD'
+type Currency = {
+    unit: Unit2
+    value: number
+}
+
+let Currency = {
+    from(value: number, unit: Unit2): Currency {
+        return {
+            unit: unit,
+            value
+        }
+    }
+}
 
