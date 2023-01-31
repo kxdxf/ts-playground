@@ -402,3 +402,71 @@ let Currency = {
     }
 }
 
+
+// --------------------------------
+// コンパニオンオブジェクトパターン
+// タプルについての型推論の改善
+// --------------------------------
+function tuple<T extends unknown[]>(...ts: T): T {
+    return ts
+}
+
+// ユーザー定義型ガード
+function isString(a: unknown): a is string {
+    return typeof a === 'string'
+}
+
+
+// --------------------------------
+// 非nullアサーション
+// --------------------------------
+// type Dialog = {
+//     id?: string
+// }
+
+type VisibleDialog = {id: string}
+type DestroyedDialog = {}
+type Dialog = VisibleDialog | DestroyedDialog
+
+function removeFromDOM(dialog: VisibleDialog, element: Element) {
+    element.parentNode!.removeChild(element)
+    // delete dialog.id  エラーが出てしまう
+}
+
+function closeDialog(dialog: Dialog) {
+    if (!('id' in dialog)) {
+        return
+    }
+
+    setTimeout(() =>
+        removeFromDOM(
+            dialog,
+            document.getElementById(dialog.id)!
+        )
+    )
+}
+
+
+// --------------------------------
+// 明確な割り当てアサーション
+// --------------------------------
+// let userId: string
+// userId.toUpperCase()
+
+let userId!: string
+fetchUser()
+userId.toUpperCase()
+
+function fetchUser() {
+    userId = 'tmp'
+}
+
+
+// --------------------------------
+// 練習問題
+// --------------------------------
+let p_6_a: number = 1
+// let p_6_b: 1 = number  割り当てできない
+let p_6_c: number | string = 'test'
+// let p_6_d: number = true  割り当てできない
+let p_6_e: (number|string)[] = [1, 2, 3]
