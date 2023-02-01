@@ -6,18 +6,18 @@ class DateIsInTheFutureError extends RangeError {}
 
 // 関数の返却値の型としてエラーを記述する
 // この手法は効果的ではあるが、例外を返す処理をネストすると冗長になる
-function parse(
-    birthday: string
-): Date | InvalidDateFormatError | DateIsInTheFutureError {
-    let date = new Date(birthday)
-    if (!isValid(date)) {
-        return new InvalidDateFormatError('message')
-    }
-    if (date.getTime() > Date.now()) {
-        return new DateIsInTheFutureError('message')
-    }
-    return date
-}
+// function parse(
+//     birthday: string
+// ): Date | InvalidDateFormatError | DateIsInTheFutureError {
+//     let date = new Date(birthday)
+//     if (!isValid(date)) {
+//         return new InvalidDateFormatError('message')
+//     }
+//     if (date.getTime() > Date.now()) {
+//         return new DateIsInTheFutureError('message')
+//     }
+//     return date
+// }
 
 
 // --------------------------------
@@ -26,13 +26,13 @@ function parse(
 // エラーが発生する可能性のある処理を効果的に連鎖させて書くことができる
 
 // 値の代わりに「コンテナ」を返却する
-function parse2(birthday: string): Date[] {
-    let date = new Date(birthday)
-    if (!isValid(date)) {
-        return []
-    }
-    return [date]
-}
+// function parse2(birthday: string): Date[] {
+//     let date = new Date(birthday)
+//     // if (!isValid(date)) {
+//         return []
+//     }
+//     return [date]
+// }
 
 
 interface Option<T> {
