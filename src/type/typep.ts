@@ -29,10 +29,10 @@ const readOnlyPerson: ReadOnlyPerson<Person> = {
 // readOnlyPerson.age = 100  // 再代入できなくなる
 
 
-const arr = ['apple', 'banana', 'grapes'] as const
-type Arr = typeof arr
-type Fruits = Arr[number]
+const arr = ['apple', 'banana', 'grapes'] as const  // readonly ['apple', 'banana', 'grapes']
+type Arr = typeof arr  // readonly ['apple', 'banana', 'grapes']
+type Fruits = Arr[number]  // 'apple' | 'banana' | 'grapes'  タプルの中身の型を取り出せる
 
 type TupleObject<T extends readonly string[]> = {
-    [P in T[number]]: P
+    [P in T[number]]: P  // タプルの中身の型を取り出して、それを
 }
